@@ -2,8 +2,8 @@
 Repo to play with Web Assembly
 
 ## Examples
-* See Hello World example in `hello`
-* See SIMPLER Example in `hellojs/`
+* See Hello World example in `hello/`
+* See SIMPLER Example in `js_node/`
 * See more complex example in `standalone/`
 
 ## How does it work
