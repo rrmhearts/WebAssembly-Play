@@ -1,4 +1,4 @@
-# Web Assembly standalone
+# Web Assembly Standalone
 The commands to run this code.
 ```
 emcc standalone.c -s EXPORTED_FUNCTIONS='["_doubler"]' -Os -s WASM=1 -s SIDE_MODULE=1 -o standalone.wasm
@@ -6,22 +6,22 @@ emcc standalone.c -s EXPORTED_FUNCTIONS='["_doubler"]' -Os -s WASM=1 -s SIDE_MOD
 emrun --port 8080 .
 ```
 
-The details:
+## The Details
 
 When compiling to WebAssembly, `emcc` emits both a JavaScript file and a WebAssembly file. The JavaScript loads the WebAssembly which contains the compiled code. This is necessary in many cases as WebAssembly currently depends on a JavaScript runtime for features like longjmp, C++ exceptions, checking the date or time, printing to the console, using an API like WebGL, etc. However, if your WebAssembly only contains **pure computational code**, it may require almost no JavaScript support. If it in fact doesn't need any of the Emscripten runtime, then it is completely "**standalone**", and all you need to use it is some [JavaScript to load it](http://webassembly.org/getting-started/js-api/). Alternatively, it may need some runtime but you may prefer to write your own runtime code, or perhaps your runtime is not even a JS VM (e.g. [wasmjit](https://github.com/rianhunter/wasmjit)).
 
-# Emitting wasm by itself
+### Emitting wasm by itself
 
 Normally emcc will emit wasm and JS to load it. You can simply throw out the JS and load the wasm with your own code. It is better in that case, though, to tell emcc you will do that, so it can avoid optimizations that assume the JS and wasm are tightly coupled. To do that, just tell emcc to only emit a wasm file,
 ```
 emcc source.c -o output.wasm
 ```
 
-# JS/wasm ABI
+### JS/wasm ABI
 
 emcc can optionally emit useful metadata in the wasm file, that a runtime can use. See the `EMIT_EMSCRIPTEN_METADATA` option, added in [#7815](https://github.com/kripken/emscripten/pull/7815). The metadata includes versioning as well as things like the memory and table sizes the wasm needs, that the runtime needs to provide.
 
-# Let the optimizer remove the runtime
+### Let the optimizer remove the runtime
 
 As of 1.37.29, `emcc`'s optimizer is powerful enough to remove all runtime elements that are not used (it does this using meta-dce, dead code elimination that crosses the JavaScript/WebAssembly boundary). This can be helpful as then the necessary runtime is smaller and easier to replace. To try this, simply build with something like
 
@@ -34,7 +34,7 @@ emcc source.c -Os
  * If you use C++ objects, the compiler must in many cases emit code to catch exceptions so that RAII destructors are called, and exceptions require a lot of runtime support. Build with `-fno-exceptions` to disable exceptions entirely.
  * [More details on how this works](https://hacks.mozilla.org/2018/01/shrinking-webassembly-and-javascript-code-sizes-in-emscripten/).
 
-# Create a dynamic library
+### Create a dynamic library
 
 Dynamic libraries have a formal definition, and are designed to be loadable in a standard way. That is a benefit over the previous approach, however, dynamic libraries also have downsides, such as having relocations for memory and function pointers, which add overhead that may be unnecessary if you are only using one module (and not linking several together).
 
